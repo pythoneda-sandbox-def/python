@@ -40,7 +40,7 @@
         "pythoneda-shared-pythoneda-banner";
       inputs.pythoneda-shared-pythoneda-domain.follows =
         "pythoneda-shared-pythoneda-domain";
-      url = "github:pythoneda-sandbox-def/python-dep/0.0.9";
+      url = "github:pythoneda-sandbox-def/python-dep/0.0.10";
     };
   };
   outputs = inputs:
@@ -55,8 +55,8 @@
       let
         org = "pythoneda-sandbox";
         repo = "python";
-        version = "0.0.146";
-        sha256 = "1i8b749q36xm2cs4n0q4l726f9anznnlkinxzbic3k1ksqby8hxm";
+        version = "0.0.147";
+        sha256 = "193awadi02ixsyk7ck036fhqnwcnlbr49rdiy5l86scizgrbcssm";
         pname = "${org}-${repo}";
         pkgs = import nixos { inherit system; };
         description = "pythoneda-sandbox Python package";
