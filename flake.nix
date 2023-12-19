@@ -40,7 +40,7 @@
         "pythoneda-shared-pythoneda-banner";
       inputs.pythoneda-shared-pythoneda-domain.follows =
         "pythoneda-shared-pythoneda-domain";
-      url = "github:pythoneda-sandbox-def/python-dep/0.0.13";
+      url = "github:pythoneda-sandbox-def/python-dep/0.0.14";
     };
   };
   outputs = inputs:
