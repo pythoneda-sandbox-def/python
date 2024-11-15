@@ -85,8 +85,8 @@
           in python.pkgs.buildPythonPackage rec {
             inherit pname version;
             projectDir = ./.;
-            pyprojectTemplateFile = ./pyprojecttoml.template;
-            pyprojectTemplate = pkgs.substituteAll {
+            pyprojectTomlTemplate = ./templates/pyproject.toml.template;
+            pyprojectToml = pkgs.substituteAll {
               authors = builtins.concatStringsSep ","
                 (map (item: ''"${item}"'') maintainers);
               desc = description;
@@ -94,7 +94,7 @@
                 version;
               package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
               pythonedaSandboxPythonDep = pythoneda-sandbox-python-dep.version;
-              src = pyprojectTemplateFile;
+              src = pyprojectTomlTemplate;
             };
             src = pkgs.fetchFromGitHub {
               owner = org;
@@ -114,7 +114,7 @@
               cp -r ${src} .
               sourceRoot=$(ls | grep -v env-vars)
               chmod +w $sourceRoot
-              cp ${pyprojectTemplate} $sourceRoot/pyproject.toml
+              cp ${pyprojectToml} $sourceRoot/pyproject.toml
             '';
 
             postInstall = ''
@@ -137,7 +137,7 @@
         defaultPackage = packages.default;
         devShells = rec {
           default = pythoneda-sandbox-python-default;
-          pythoneda-sandbox-python-default = pythoneda-sandbox-python-python311;
+          pythoneda-sandbox-python-default = pythoneda-sandbox-python-python312;
           pythoneda-sandbox-python-python38 = shared.devShell-for {
             banner = "${
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38
@@ -194,10 +194,24 @@
               pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python311;
             inherit archRole layer org pkgs repo space;
           };
+          pythoneda-sandbox-python-python312 = shared.devShell-for {
+            banner = "${
+                pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python312
+              }/bin/banner.sh";
+            extra-namespaces = "";
+            nixpkgs-release = nixpkgsRelease;
+            package = packages.pythoneda-sandbox-python-python312;
+            python = pkgs.python312;
+            pythoneda-shared-pythonlang-banner =
+              pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python312;
+            pythoneda-shared-pythonlang-domain =
+              pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python312;
+            inherit archRole layer org pkgs repo space;
+          };
         };
         packages = rec {
           default = pythoneda-sandbox-python-default;
-          pythoneda-sandbox-python-default = pythoneda-sandbox-python-python311;
+          pythoneda-sandbox-python-default = pythoneda-sandbox-python-python312;
           pythoneda-sandbox-python-python38 = pythoneda-sandbox-python-for {
             python = pkgs.python38;
             pythoneda-shared-pythonlang-domain =
@@ -225,6 +239,13 @@
               pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python311;
             pythoneda-sandbox-python-dep =
               pythoneda-sandbox-python-dep.packages.${system}.pythoneda-sandbox-python-dep-python311;
+          };
+          pythoneda-sandbox-python-python312 = pythoneda-sandbox-python-for {
+            python = pkgs.python312;
+            pythoneda-shared-pythonlang-domain =
+              pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python312;
+            pythoneda-sandbox-python-dep =
+              pythoneda-sandbox-python-dep.packages.${system}.pythoneda-sandbox-python-dep-python312;
           };
         };
       });
