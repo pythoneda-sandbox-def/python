@@ -24,14 +24,14 @@
     pythoneda-shared-pythonlang-banner = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.72";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.74";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.96";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.101";
     };
     pythoneda-sandbox-python-dep = {
       inputs.flake-utils.follows = "flake-utils";
@@ -40,7 +40,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-sandbox-def/python-dep/0.0.58";
+      url = "github:pythoneda-sandbox-def/python-dep/0.0.60";
     };
   };
   outputs = inputs:
@@ -58,6 +58,8 @@
         version = "0.0.151";
         sha256 = "07w2yan4clks09fz3c5f45x0p1pv7mrgvqs3qm83m4slf21ah7jk";
         pname = "${org}-${repo}";
+        pythonpackage = "pythoneda.sandbox";
+        package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
         pkgs = import nixpkgs { inherit system; };
         description = "pythoneda-sandbox Python package";
         license = pkgs.lib.licenses.gpl3;
@@ -75,7 +77,6 @@
           let
             pnameWithUnderscores =
               builtins.replaceStrings [ "-" ] [ "_" ] pname;
-            pythonpackage = "pythoneda.sandbox";
             pythonVersionParts = builtins.splitVersion python.version;
             pythonMajorVersion = builtins.head pythonVersionParts;
             pythonMajorMinorVersion =
@@ -92,7 +93,6 @@
               desc = description;
               inherit homepage pname pythonMajorMinorVersion package
                 version;
-              package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
               pythonedaSandboxPythonDep = pythoneda-sandbox-python-dep.version;
               src = pyprojectTomlTemplate;
             };
