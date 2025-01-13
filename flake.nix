@@ -24,14 +24,14 @@
     pythoneda-shared-pythonlang-banner = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.74";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.78";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.110";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.112";
     };
     pythoneda-sandbox-python-dep = {
       inputs.flake-utils.follows = "flake-utils";
@@ -40,7 +40,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-sandbox-def/python-dep/0.0.68";
+      url = "github:pythoneda-sandbox-def/python-dep/0.0.70";
     };
   };
   outputs = inputs:
@@ -111,22 +111,32 @@
             pythonImportsCheck = [ pythonpackage ];
 
             unpackPhase = ''
-              cp -r ${src} .
-              sourceRoot=$(ls | grep -v env-vars)
-              chmod +w $sourceRoot
-              cp ${pyprojectToml} $sourceRoot/pyproject.toml
+              command cp -r ${src} .
+              sourceRoot=$(command ls | command grep -v env-vars)
+              command chmod +w $sourceRoot
+              command cp ${pyprojectToml} $sourceRoot/pyproject.toml
             '';
 
-            postInstall = ''
-              pushd /build/$sourceRoot
-              for f in $(find . -name '__init__.py'); do
+            postInstall = with python.pkgs; ''
+              command pushd /build/$sourceRoot
+              for f in $(command find . -name '__init__.py'); do
                 if [[ ! -e $out/lib/python${pythonMajorMinorVersion}/site-packages/$f ]]; then
-                  cp $f $out/lib/python${pythonMajorMinorVersion}/site-packages/$f;
+                  command cp $f $out/lib/python${pythonMajorMinorVersion}/site-packages/$f;
                 fi
               done
-              popd
-              mkdir $out/dist
-              cp dist/${wheelName} $out/dist
+              command popd
+              command mkdir -p $out/dist $out/deps/flakes $out/deps/nixpkgs
+              command cp dist/${wheelName} $out/dist
+              for dep in ${pythoneda-sandbox-python-dep}; do
+                command cp -r $dep/dist/* $out/deps || true
+                if [ -e $dep/deps ]; then
+                  command cp -r $dep/deps/* $out/deps || true
+                fi
+                METADATA=$dep/lib/python${pythonMajorMinorVersion}/site-packages/*.dist-info/METADATA
+                NAME="$(command grep -m 1 '^Name: ' $METADATA | command cut -d ' ' -f 2)"
+                VERSION="$(command grep -m 1 '^Version: ' $METADATA | command cut -d ' ' -f 2)"
+                command ln -s $dep $out/deps/flakes/$NAME-$VERSION || true
+              done
             '';
 
             meta = with pkgs.lib; {
